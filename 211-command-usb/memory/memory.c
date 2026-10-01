@@ -108,7 +108,7 @@ void fw_info(void)
     printf("%-16s 0x%08x %d\n", "data_variable", (unsigned)&data_variable, data_variable);
     printf("%-16s 0x%08x %d\n", "bss_variable", (unsigned)&bss_variable, bss_variable);
     printf("%-16s 0x%08x %d\n", "stack_variable", (unsigned)&stack_variable, stack_variable);
-    printf("%-16s 0x%08x %d\n", "heap_variable", (unsigned)&heap_variable, *heap_variable);
+    printf("%-16s 0x%08x %d\n", "heap_variable", (unsigned)heap_variable, *heap_variable);
 
     free(heap_variable);
 }
