@@ -3,25 +3,26 @@
 устройство: 2e8a:000a
 серийный номер: E66118C4E35B702B
 порт: COM3
-начало: 2026-10-01T21:21:38
+начало: 2026-10-01T21:32:48
    0.000 --> enable
    0.001 <-- enable
    0.001 <-- dbg read_line:66 got enable
    0.001 <-- inf handle_command:29 led on
-   2.032 --> disable
-   2.032 <-- disable
-   2.033 <-- dbg read_line:66 got disable
-   2.033 <-- inf handle_command:34 led off
-   4.080 --> info
-   4.080 <-- info
-   4.081 <-- dbg read_line:66 got info
-   4.081 <-- project: 211-command-usb
-   4.081 <-- repo: https://github.com/dordienkodv/es-student
-   4.081 <-- board: pico
-   4.082 <-- serial: E66118C4E35B702B
-   4.082 <-- chip: manufacturer 0x927, part 0x0002, revision 2
-   6.116 --> nosuchcommand
-   6.116 <-- nosuchcommand
-   6.117 <-- dbg read_line:66 got nosuchcommand
-   6.117 <-- err handle_command:46 unknown command: nosuchcommand
-итог: отправлено команд 4, принято строк 16
+   2.026 --> disable
+   2.027 <-- disable
+   2.027 <-- dbg read_line:66 got disable
+   2.027 <-- inf handle_command:34 led off
+   4.043 --> info
+   4.044 <-- info
+   4.044 <-- dbg read_line:66 got info
+   4.044 <-- project: 211-command-usb
+   4.045 <-- repo: https://github.com/dordienkodv/es-student
+   4.045 <-- board: pico
+   4.045 <-- serial: E66118C4E35B702B
+   4.046 <-- chip: manufacturer 0x927, part 0x0002, revision 2
+   4.046 <-- pico-sdk: 2.3.0
+   6.058 --> nosuchcommand
+   6.058 <-- nosuchcommand
+   6.059 <-- dbg read_line:66 got nosuchcommand
+   6.059 <-- err handle_command:46 unknown command: nosuchcommand
+итог: отправлено команд 4, принято строк 17
