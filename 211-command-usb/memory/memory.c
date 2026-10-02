@@ -4,9 +4,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "hardware/regs/addressmap.h"
+#include "hardware/regs/addressmap.h"
+#include "hardware/regs/sio.h"
 #include "pico/stdlib.h"
 #include "device.h"
 #include "command.h"
+#include "led.h"
+
+#define VECTOR_TABLE 0x10000100
 
 #define RP2040_SRAM_SIZE_BYTES  (264 * 1024U)  // 270336
 #define RP2040_ROM_SIZE_BYTES   (16  * 1024U)  // 16384
@@ -111,4 +116,24 @@ void fw_info(void)
     printf("%-16s 0x%08x %d\n", "heap_variable", (unsigned)heap_variable, *heap_variable);
 
     free(heap_variable);
+}
+
+void boot_info(void)
+{
+    const uint32_t* vectors = (const uint32_t*)VECTOR_TABLE;
+
+    uint32_t stack_top = vectors[0];
+    uint32_t reset_handler = vectors[1];
+
+    printf("%-14s 0x%08x\n", "vector table", (unsigned)vectors);
+    printf("  %-12s 0x%08x\n", "stack top", (unsigned)stack_top);
+    printf("  %-12s 0x%08x\n", "reset", (unsigned)reset_handler);
+    printf("  %-12s 0x%08x\n", "reset (even)", (unsigned)(reset_handler & ~1u));
+
+    volatile uint32_t* gpio_in = (uint32_t*)(SIO_BASE + SIO_GPIO_IN_OFFSET);
+    uint32_t level = (*gpio_in >> led_pin()) & 1u;
+
+    printf("%-14s 0x%08x\n", "gpio in", (unsigned)gpio_in);
+    printf("  %-12s %u\n", "led bit", level);
+    printf("  %-12s %u\n", "gpio_get", gpio_get(led_pin()));
 }

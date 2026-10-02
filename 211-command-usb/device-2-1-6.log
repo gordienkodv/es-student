@@ -1,0 +1,45 @@
+задание: 2.1.6
+проект: 211-command-usb
+устройство: 2e8a:000a
+серийный номер: E66118C4E35B702B
+порт: COM3
+начало: 2026-10-02T14:43:30
+   0.000 --> boot_info
+   0.001 <-- boot_info
+   0.001 <-- dbg read_line:120 got boot_info
+   0.001 <-- vector table   0x10000100
+   0.002 <-- stack top    0x20042000
+   0.002 <-- reset        0x100001f7
+   0.002 <-- reset (even) 0x100001f6
+   0.002 <-- gpio in        0xd0000004
+   0.002 <-- led bit      0
+   0.003 <-- gpio_get     0
+   2.031 --> enable
+   2.031 <-- enable
+   2.032 <-- dbg read_line:120 got enable
+   2.033 <-- inf cmd_enable:29 led on
+   4.048 --> boot_info
+   4.049 <-- boot_info
+   4.050 <-- dbg read_line:120 got boot_info
+   4.051 <-- vector table   0x10000100
+   4.051 <-- stack top    0x20042000
+   4.052 <-- reset        0x100001f7
+   4.052 <-- reset (even) 0x100001f6
+   4.052 <-- gpio in        0xd0000004
+   4.053 <-- led bit      1
+   4.053 <-- gpio_get     1
+   6.070 --> disable
+   6.071 <-- disable
+   6.072 <-- dbg read_line:120 got disable
+   6.072 <-- inf cmd_disable:35 led off
+   8.099 --> boot_info
+   8.100 <-- boot_info
+   8.100 <-- dbg read_line:120 got boot_info
+   8.101 <-- vector table   0x10000100
+   8.101 <-- stack top    0x20042000
+   8.101 <-- reset        0x100001f7
+   8.101 <-- reset (even) 0x100001f6
+   8.101 <-- gpio in        0xd0000004
+   8.102 <-- led bit      0
+   8.102 <-- gpio_get     0
+итог: отправлено команд 5, принято строк 33
