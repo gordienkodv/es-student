@@ -9,7 +9,7 @@
 #include "hardware/regs/sysinfo.h"
 #include "pico/version.h"
 
-struct info_t device_card;
+struct info_t device_card = { .revision = 0x10, .version = 2, .name = DEVICE_NAME };
 
 void device_card_init(void)
 {
