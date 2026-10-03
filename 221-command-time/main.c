@@ -134,10 +134,10 @@ const struct command_t commands[] = {
     { "clk_info", cmd_clk_info },
     { "uptime", cmd_uptime },
     { "calc_pi", cmd_calc_pi },
-    { "main_time_exec", cmd_main_time_exec },
-    { "main_time_reset", cmd_main_time_reset },
-    { "clk_sys_low", cmd_clk_sys_low },
-    { "cmd_clk_sys_default", cmd_clk_sys_default },
+    { "main_time_exec", main_time_exec },
+    { "main_time_reset", main_time_reset },
+    { "clk_sys_low", clk_sys_low },
+    { "clk_sys_default", clk_sys_default },
 };
 
 const uint command_count = sizeof(commands) / sizeof(commands[0]);
