@@ -37,7 +37,7 @@ void api_handle(const command_t *command)
 {
     if (command->truncated)
     {
-        LOG_ERR("command longer than 63 characters or 4 arguments\n");
+        printf("error: command longer than 63 characters or 4 arguments\n");
         return;
     }
 
@@ -56,7 +56,7 @@ void api_handle(const command_t *command)
         }
     }
 
-    LOG_ERR("unknown command: %s\n", command->name);
+    printf("error: unknown command: %s\n", command->name);
 }
 
 void cmd_help(const command_t *command)
@@ -136,7 +136,7 @@ void cmd_calc_pi(const command_t *command)
     }
     else
     {
-        LOG_ERR("usage calc_pi [terms]\n");
+        printf("error: usage calc_pi [terms]\n");
     }
 }
 
