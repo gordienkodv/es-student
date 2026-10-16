@@ -1,20 +1,20 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <errno.h>
-#include "hardware/clocks.h"
 #include "stdio-text-protocol.h"
 #include "api.h"
 #include "device.h"
 #include "profiling.h"
 #include "log.h"
 #include "led-task.h"
+#include "button-task.h"
 
 #include "pico/stdlib.h"
 
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "pico/time.h"
+#include "hardware/timer.h"
 
 static void cmd_help(const command_t *command);
 static void cmd_info(const command_t *command);
@@ -26,6 +26,7 @@ static void cmd_led_enable(const command_t *command);
 static void cmd_led_disable(const command_t *command);
 static void cmd_led_blink(const command_t *command);
 static void cmd_led_period(const command_t *command);
+static void cmd_button(const command_t *command);
 
 const api_command_t commands[] = {
     { "help", "list of commands", cmd_help },
@@ -38,6 +39,7 @@ const api_command_t commands[] = {
     { "led_disable", "disable led", cmd_led_disable},
     { "led_blink", "blink led", cmd_led_blink},
     { "led_period", "set led blink period", cmd_led_period},
+    { "button", "button state", cmd_button},
 };
 
 const uint command_count = sizeof(commands) / sizeof(commands[0]);
@@ -202,3 +204,7 @@ static void print_led_state(void)
     }
 }
 
+static void cmd_button(const command_t *command)
+{
+    button();
+}
