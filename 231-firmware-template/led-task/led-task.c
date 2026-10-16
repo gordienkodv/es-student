@@ -66,12 +66,15 @@ uint32_t led_task_get_period_ms(void)
 
 static bool period_elapsed(uint64_t *last_us, uint64_t period_us)
 {
-    uint64_t now_us = time_us_64();
+    uint64_t time_us = time_us_64();
 
-    if (now_us - *last_us < period_us)
+    if (time_us - *last_us < period_us)
         return false;
 
     *last_us += period_us;
+
+    if (time_us - *last_us >= period_us)
+        *last_us = time_us;
 
     return true;
 }
