@@ -1,6 +1,5 @@
 #include "button-task.h"
 #include "led-task.h"
-#include <stdint.h>
 #include "hardware/gpio.h"
 #include <stdio.h>
 #include "hardware/timer.h"
@@ -9,6 +8,13 @@ static const uint BUTTON_PIN = 15;
 static const uint DEBOUNCE_US = 20000;
 static uint64_t last_us = 0;
 static uint64_t presses = 0;
+
+typedef enum {
+    BUTTON_STATE_RELEASED,
+    BUTTON_STATE_PRESS_DOUBT,
+    BUTTON_STATE_PRESSED,
+    BUTTON_STATE_RELEASE_DOUBT
+} button_state_t;
 
 static button_state_t button_state = BUTTON_STATE_RELEASED;
 
@@ -62,10 +68,15 @@ void button_task_handle(void)
     }
 }
 
-void button(void)
+bool button_task_is_pressed(void)
 {
     if((button_state==BUTTON_STATE_RELEASED) || (button_state==BUTTON_STATE_PRESS_DOUBT))
-        printf("button: released, presses %u\n", (unsigned)presses);
+        return true;
     else
-        printf("button: pressed, presses %u\n", (unsigned)presses);
+        return false;
 }
+uint64_t button_task_get_press_count(void)
+{
+    return presses;
+}
+

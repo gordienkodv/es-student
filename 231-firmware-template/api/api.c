@@ -206,5 +206,8 @@ static void print_led_state(void)
 
 static void cmd_button(const command_t *command)
 {
-    button();
+    if(button_task_is_pressed())
+        printf("button: released, presses %u\n", (unsigned)button_task_get_press_count());
+    else
+        printf("button: pressed, presses %u\n", (unsigned)button_task_get_press_count());
 }
