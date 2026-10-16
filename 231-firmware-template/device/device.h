@@ -10,6 +10,4 @@
 #define DEVICE_BOARD "unknown"
 #endif
 
-#include <stdint.h>
-
 void device_info(void);

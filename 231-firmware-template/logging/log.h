@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdio.h>
-
 #define LOG_LEVEL_ERR 1
 #define LOG_LEVEL_INF 2
 #define LOG_LEVEL_DBG 3
