@@ -71,10 +71,7 @@ static bool period_elapsed(uint64_t *last_us, uint64_t period_us)
     if (now_us - *last_us < period_us)
         return false;
 
-    *last_us = *last_us + period_us;
-
-    if (now_us - *last_us >= period_us)
-        *last_us = now_us;
+    *last_us += period_us;
 
     return true;
 }
