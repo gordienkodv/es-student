@@ -18,10 +18,10 @@ static uint32_t pi_terms_now = 0;
 static double pi;
 static int pi_sign = 1;
 
-void pi_task_start(int n)
+bool pi_task_start(int n)
 {
     if(pi_state==PI_RUNNING)
-        printf("error: pi is busy\n");
+        return false;
     else
     {
         pi_state = PI_RUNNING;
@@ -32,6 +32,7 @@ void pi_task_start(int n)
         pi = 0.0;
         printf("pi: started, %u terms\n", n);
     }
+    return true;
 }
 
 void pi_task_handle(void)

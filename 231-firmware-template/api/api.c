@@ -104,9 +104,11 @@ static void cmd_pi_start(const command_t *command)
     uint32_t value;
 
     if (command->argv[0] == NULL)
-        pi_task_start(CALC_PI_TERMS);
+        if (!pi_task_start(CALC_PI_TERMS))
+            printf("error: pi is busy\n");
     else if(parse_u32(command->argv[0], &value) && (command->argc==1))
-        pi_task_start(value);
+        if (!pi_task_start(value))
+            printf("error: pi is busy\n");
     else
         printf("error: usage start_pi [terms]\n");
 }
