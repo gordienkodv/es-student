@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <stdbool.h>
 
 void button_task_handle(void);
 void button_task_init(void);

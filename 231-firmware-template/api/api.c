@@ -8,7 +8,7 @@
 #include "log.h"
 #include "led-task.h"
 #include "button-task.h"
-
+#include "pi-task.h"
 #include "pico/stdlib.h"
 
 #include <string.h>
@@ -19,7 +19,6 @@
 static void cmd_help(const command_t *command);
 static void cmd_info(const command_t *command);
 static void cmd_uptime(const command_t *command);
-static void cmd_calc_pi(const command_t *command);
 static void cmd_main_time_exec(const command_t *command);
 static void cmd_main_time_reset(const command_t *command);
 static void cmd_led_enable(const command_t *command);
@@ -27,12 +26,13 @@ static void cmd_led_disable(const command_t *command);
 static void cmd_led_blink(const command_t *command);
 static void cmd_led_period(const command_t *command);
 static void cmd_button(const command_t *command);
+static void cmd_pi_start(const command_t *command);
+static void cmd_pi(const command_t *command);
 
 const api_command_t commands[] = {
     { "help", "list of commands", cmd_help },
     { "info", "device passport", cmd_info },
     { "uptime", "time since reset", cmd_uptime },
-    { "calc_pi", "calculate pi: calc_pi [terms]", cmd_calc_pi },
     { "main_time_exec", "superloop iteration: average and maximum", cmd_main_time_exec },
     { "main_time_reset", "reset maximum iteration", cmd_main_time_reset },
     { "led_enable", "enable led", cmd_led_enable},
@@ -40,9 +40,27 @@ const api_command_t commands[] = {
     { "led_blink", "blink led", cmd_led_blink},
     { "led_period", "set led blink period", cmd_led_period},
     { "button", "button state", cmd_button},
+    { "pi_start", "start pi calculation", cmd_pi_start},
+    { "pi", "get pi value", cmd_pi},
 };
 
 const uint command_count = sizeof(commands) / sizeof(commands[0]);
+
+static bool parse_u32(const char *text, uint32_t *value)
+{
+    if (!isdigit((unsigned char)text[0]))
+        return false;
+
+    char *end;
+    errno = 0;
+    unsigned long number = strtoul(text, &end, 10);
+
+    if (*end != '\0' || errno == ERANGE || number > UINT32_MAX)
+        return false;
+
+    *value = (uint32_t)number;
+    return true;
+}
 
 void api_handle(const command_t *command)
 {
@@ -80,63 +98,22 @@ static void cmd_uptime(const command_t *command)
 }
 
 static const uint CALC_PI_TERMS = 1000000;
-static double calc_pi(int n)
-{
-    double sum = 0.0;
-    double sign = 1.0;
 
-    for (int k = 0; k < n; k++) {
-        sum += sign / (2.0 * k + 1.0);
-        sign = -sign;
-    }
-
-    return 4.0 * sum;
-}
-
-volatile double pi_result;
-
-static bool parse_u32(const char *text, uint32_t *value)
-{
-    if (!isdigit((unsigned char)text[0]))
-        return false;
-
-    char *end;
-    errno = 0;
-    unsigned long number = strtoul(text, &end, 10);
-
-    if (*end != '\0' || errno == ERANGE || number > UINT32_MAX)
-        return false;
-
-    *value = (uint32_t)number;
-    return true;
-}
-
-static void cmd_calc_pi(const command_t *command)
+static void cmd_pi_start(const command_t *command)
 {
     uint32_t value;
 
     if (command->argv[0] == NULL)
-    {
-        uint64_t start_us = time_us_64();
-        pi_result = calc_pi(CALC_PI_TERMS);
-        uint64_t spent_us = time_us_64() - start_us;
-
-        printf("pi: %.8f\n", pi_result);
-        printf("time: %llu ms\n", spent_us / 1000);
-    }
-    else if(parse_u32(command->argv[0], &value) && (command->argc!=1))
-    {
-        uint64_t start_us = time_us_64();
-        pi_result = calc_pi(value);
-        uint64_t spent_us = time_us_64() - start_us;
-
-        printf("pi: %.9f\n", pi_result);
-        printf("time: %llu ms\n", spent_us / 1000);
-    }
+        pi_task_start(CALC_PI_TERMS);
+    else if(parse_u32(command->argv[0], &value) && (command->argc==1))
+        pi_task_start(value);
     else
-    {
-        printf("error: usage calc_pi [terms]\n");
-    }
+        printf("error: usage start_pi [terms]\n");
+}
+
+static void cmd_pi(const command_t *command)
+{
+    pi_task_get_result();
 }
 
 static void cmd_main_time_exec(const command_t *command)
