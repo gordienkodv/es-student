@@ -64,7 +64,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     logging
     profiling
     systime
-    pico_standard_link
+    pico_stdlib
 )
 
 pico_set_linker_script(${PROJECT_NAME}
