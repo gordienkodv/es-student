@@ -15,5 +15,4 @@ typedef struct
 } command_t;
 
 void stdio_text_protocol_init(void);
-
 const command_t *stdio_text_protocol_handle(void);

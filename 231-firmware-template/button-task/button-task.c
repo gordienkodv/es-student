@@ -2,7 +2,7 @@
 #include "led-task.h"
 #include "hardware/gpio.h"
 #include <stdio.h>
-#include "hardware/timer.h"
+#include "systime/systime.h"
 
 static const uint BUTTON_PIN = 15;
 static const uint DEBOUNCE_US = 20000;
@@ -28,7 +28,7 @@ void button_task_init(void)
 void button_task_handle(void)
 {
     bool state = gpio_get(BUTTON_PIN);
-    uint64_t now_us = time_us_64();
+    uint64_t now_us = systime_us();
 
     switch (button_state)
     {

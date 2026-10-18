@@ -1,12 +1,9 @@
-#include "device.h"
+#include "device/device.h"
 
-#include <stdint.h>
 #include "pico/unique_id.h"
 #include "hardware/regs/addressmap.h"
 #include "hardware/regs/sysinfo.h"
 #include "pico/version.h"
-
-device_info_t info;
 
 void device_get_info(device_info_t *info)
 {
@@ -20,4 +17,3 @@ void device_get_info(device_info_t *info)
     info->chip_revision = (id & SYSINFO_CHIP_ID_REVISION_BITS) >> SYSINFO_CHIP_ID_REVISION_LSB;
     info->sdk_version = PICO_SDK_VERSION_STRING;
 }
-

@@ -1,12 +1,12 @@
+#include "stdio-text-protocol/stdio-text-protocol.h"
+
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "stdio-text-protocol.h"
-#include "log.h"
+#include "logging/logging.h"
 
 static char line[STDIO_TEXT_PROTOCOL_LINE_SIZE];
 static uint line_length = 0;
 static bool truncated = false;
-command_t command;
 
 void stdio_text_protocol_init(void)
 {
@@ -25,10 +25,13 @@ const command_t *stdio_text_protocol_handle(void)
         putchar('\n');
         line[line_length] = '\0';
 
-        if (line_length > 0)
+        if (line_length==0)
+            return NULL;
+        else
         {
             LOG_DBG("got %s\n", line);
 
+            static command_t command;
             command.name = &line[0];
             command.argc = 0;
             symbol = 0;
@@ -55,14 +58,12 @@ const command_t *stdio_text_protocol_handle(void)
                 }
             }
             command.truncated = truncated;
+            
+            line_length = 0;
+            truncated = false;
+
+            return &command;
         }
-        else
-            return NULL;
-
-        line_length = 0;
-        truncated = false;
-
-        return &command;
     }
 
     if (symbol == 0x08 || symbol == 0x7f)

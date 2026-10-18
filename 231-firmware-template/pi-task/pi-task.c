@@ -1,7 +1,7 @@
 #include "pi-task.h"
-#include "hardware/timer.h"
 #include <stdio.h>
 #include <stdint.h>
+#include "systime/systime.h"
 
 #define PI_TERMS_PER_CALL 100
 
@@ -25,7 +25,7 @@ bool pi_task_start(int n)
     else
     {
         pi_state = PI_RUNNING;
-        total_us = time_us_64();
+        total_us = systime_us();
         pi_terms_now = 0;
         pi_term_need = n;
         pi_sign = 1;
@@ -55,7 +55,7 @@ void pi_task_handle(void)
     {
         pi *= 4.0;
         pi_state = PI_FINISHED;
-        total_us = time_us_64()-total_us;
+        total_us = systime_us()-total_us;
     }
 }
 

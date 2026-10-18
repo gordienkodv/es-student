@@ -1,11 +1,14 @@
-#include "profiling.h"
 #include "api.h"
-#include "stdio-text-protocol.h"
 #include "led-task.h"
 #include "button-task.h"
 #include "pi-task.h"
-#include "device.h"
-#include "log.h"
+
+#include "stdio-text-protocol/stdio-text-protocol.h"
+#include "device/device.h"
+#include "logging/logging.h"
+#include "profiling/profiling.h"
+#include "systime/systime.h"
+#include "firmware.h"
 
 typedef enum {
     STOPWATCH_LOOP,
@@ -19,7 +22,7 @@ timers_id_t timers_id;
 
 int main()
 {
-    LOG_INF("%s %s\n", DEVICE_NAME, FIRMWARE_VERSION);
+    LOG_INF("%s %s\n", FIRMWARE_NAME, FIRMWARE_VERSION);
 
     stdio_text_protocol_init();
     led_task_init();

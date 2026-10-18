@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <errno.h>
-#include "stdio-text-protocol.h"
 #include "api.h"
-#include "device.h"
-#include "profiling.h"
-#include "log.h"
+#include "stdio-text-protocol/stdio-text-protocol.h"
+#include "device/device.h"
+#include "profiling/profiling.h"
+#include "systime/systime.h"
 #include "led-task.h"
 #include "button-task.h"
 #include "pi-task.h"
@@ -14,7 +14,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "hardware/timer.h"
+#include "systime/systime.h"
+
+#include "firmware.h"
+
+static device_info_t device_info;
+static profiling_result_t profiling_result[TIMERS_NUMBER];
 
 static void cmd_help(const command_t *command);
 static void cmd_info(const command_t *command);
@@ -89,20 +94,20 @@ static void cmd_help(const command_t *command)
 
 static void cmd_info(const command_t *command)
 {
-    device_get_info(&info);
-    printf("name: %s\n", DEVICE_NAME);
+    device_get_info(&device_info);
+    printf("name: %s\n", FIRMWARE_NAME);
     printf("version: %s\n", FIRMWARE_VERSION);
-    printf("project: %s\n", DEVICE_PROJECT);
-    printf("repo: %s\n", DEVICE_REPO);
-    printf("board: %s\n", info.board);
-    printf("serial: %s\n", info.serial);
-    printf("chip: manufacturer 0x%03x, part 0x%04x, revision %u\n", (unsigned)info.chip_manufacturer, (unsigned)info.chip_part, (unsigned)info.chip_revision);
-    printf("pico-sdk: %s\n", info.sdk_version);
+    printf("project: %s\n", FIRMWARE_PROJECT);
+    printf("repo: %s\n", FIRMWARE_REPO);
+    printf("board: %s\n", device_info.board);
+    printf("serial: %s\n", device_info.serial);
+    printf("chip: manufacturer 0x%03x, part 0x%04x, revision %u\n", (unsigned)device_info.chip_manufacturer, (unsigned)device_info.chip_part, (unsigned)device_info.chip_revision);
+    printf("pico-sdk: %s\n", device_info.sdk_version);
 }
 
 static void cmd_uptime(const command_t *command)
 {
-    printf("uptime: %llu ms\n", time_us_64() / 1000);
+    printf("uptime: %llu ms\n", systime_us() / 1000);
 }
 
 static const uint CALC_PI_TERMS = 1000000;
