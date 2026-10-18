@@ -19,8 +19,8 @@
 static void cmd_help(const command_t *command);
 static void cmd_info(const command_t *command);
 static void cmd_uptime(const command_t *command);
-static void cmd_main_time_exec(const command_t *command);
-static void cmd_main_time_reset(const command_t *command);
+static void cmd_profiling(const command_t *command);
+static void cmd_profiling_reset(const command_t *command);
 static void cmd_led_enable(const command_t *command);
 static void cmd_led_disable(const command_t *command);
 static void cmd_led_blink(const command_t *command);
@@ -33,8 +33,8 @@ const api_command_t commands[] = {
     { "help", "list of commands", cmd_help },
     { "info", "device passport", cmd_info },
     { "uptime", "time since reset", cmd_uptime },
-    { "main_time_exec", "superloop iteration: average and maximum", cmd_main_time_exec },
-    { "main_time_reset", "reset maximum iteration", cmd_main_time_reset },
+    { "profiling", "get profiling info", cmd_profiling },
+    { "profiling_reset", "reset profiling info", cmd_profiling_reset },
     { "led_enable", "enable led", cmd_led_enable},
     { "led_disable", "disable led", cmd_led_disable},
     { "led_blink", "blink led", cmd_led_blink},
@@ -89,6 +89,7 @@ static void cmd_help(const command_t *command)
 
 static void cmd_info(const command_t *command)
 {
+    device_get_info(&info);
     device_info();
 }
 
@@ -106,9 +107,11 @@ static void cmd_pi_start(const command_t *command)
     if (command->argv[0] == NULL)
         if (!pi_task_start(CALC_PI_TERMS))
             printf("error: pi is busy\n");
+        else {;}
     else if(parse_u32(command->argv[0], &value) && (command->argc==1))
         if (!pi_task_start(value))
             printf("error: pi is busy\n");
+        else {;}
     else
         printf("error: usage start_pi [terms]\n");
 }
@@ -118,15 +121,16 @@ static void cmd_pi(const command_t *command)
     pi_task_get_result();
 }
 
-static void cmd_main_time_exec(const command_t *command)
+static void cmd_profiling(const command_t *command)
 {
-    printf("iteration avg %.2f us, max %u us\n", profiling_avg_us(), (unsigned)profiling_max_us());
+    for(int id=0; id<TIMERS_NUMBER; id++)
+        profiling_get(id, &profiling_result[id]);
 }
 
-static void cmd_main_time_reset(const command_t *command)
+static void cmd_profiling_reset(const command_t *command)
 {
-    profiling_reset_max();
-    printf("max reset\n");
+    profiling_reset();
+    printf("profiling reset\n");
 }
 
 static void print_led_state(void);

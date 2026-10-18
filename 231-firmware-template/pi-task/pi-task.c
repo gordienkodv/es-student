@@ -70,7 +70,7 @@ void pi_task_get_result(void)
             printf("pi: running\n");
             break;
         case PI_FINISHED:
-            printf("pi: %f.9 in %u ms\n", pi, (unsigned)(total_us/1000));
+            printf("pi: %.9f in %u ms\n", pi, (unsigned)(total_us/1000));
             break;
     }
 }
