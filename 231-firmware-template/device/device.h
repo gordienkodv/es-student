@@ -26,4 +26,3 @@ typedef struct {
 extern device_info_t info;
 
 void device_get_info(device_info_t *info);
-void device_info(void);

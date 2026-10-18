@@ -1,6 +1,5 @@
 #include "device.h"
 
-#include <stdio.h>
 #include <stdint.h>
 #include "pico/unique_id.h"
 #include "hardware/regs/addressmap.h"
@@ -22,14 +21,3 @@ void device_get_info(device_info_t *info)
     info->sdk_version = PICO_SDK_VERSION_STRING;
 }
 
-void device_info(void)
-{
-    printf("name: %s\n", DEVICE_NAME);
-    printf("version: %s\n", FIRMWARE_VERSION);
-    printf("project: %s\n", DEVICE_PROJECT);
-    printf("repo: %s\n", DEVICE_REPO);
-    printf("board: %s\n", info.board);
-    printf("serial: %s\n", info.serial);
-    printf("chip: manufacturer 0x%03x, part 0x%04x, revision %u\n", (unsigned)info.chip_manufacturer, (unsigned)info.chip_part, (unsigned)info.chip_revision);
-    printf("pico-sdk: %s\n", info.sdk_version);
-}

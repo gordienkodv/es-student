@@ -90,7 +90,14 @@ static void cmd_help(const command_t *command)
 static void cmd_info(const command_t *command)
 {
     device_get_info(&info);
-    device_info();
+    printf("name: %s\n", DEVICE_NAME);
+    printf("version: %s\n", FIRMWARE_VERSION);
+    printf("project: %s\n", DEVICE_PROJECT);
+    printf("repo: %s\n", DEVICE_REPO);
+    printf("board: %s\n", info.board);
+    printf("serial: %s\n", info.serial);
+    printf("chip: manufacturer 0x%03x, part 0x%04x, revision %u\n", (unsigned)info.chip_manufacturer, (unsigned)info.chip_part, (unsigned)info.chip_revision);
+    printf("pico-sdk: %s\n", info.sdk_version);
 }
 
 static void cmd_uptime(const command_t *command)
@@ -124,7 +131,8 @@ static void cmd_pi(const command_t *command)
 static void cmd_profiling(const command_t *command)
 {
     for(int id=0; id<TIMERS_NUMBER; id++)
-        profiling_get(id, &profiling_result[id]);
+        if(profiling_get(id, &profiling_result[id]))
+            printf("%-10s count %-10u mean %.2f us  max %u us\n", profiling_result[id].name, (unsigned)profiling_result[id].number_starts, profiling_result[id].mean_us, (unsigned)profiling_result[id].max_us);
 }
 
 static void cmd_profiling_reset(const command_t *command)

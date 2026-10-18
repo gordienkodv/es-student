@@ -1,7 +1,6 @@
 #include "profiling.h"
 #include "pico/stdlib.h"
 #include "hardware/timer.h"
-#include <stdio.h>
 
 typedef struct{
     uint32_t total_us;
@@ -45,10 +44,7 @@ void profiling_stop(uint32_t id)
 bool profiling_get(uint32_t id, profiling_result_t *result)
 {
     if((result->number_starts>0) && id<TIMERS_NUMBER)
-        {
-            printf("%-10s count %-10u mean %.2f us  max %u us\n", result->name, (unsigned)result->number_starts, result->mean_us, (unsigned)result->max_us);
             return true;
-        }
     else
         return false;
 }
