@@ -1,27 +1,26 @@
+#include "api-commands.h"
+
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <errno.h>
-#include "api.h"
-#include "stdio-text-protocol/stdio-text-protocol.h"
-#include "device/device.h"
-#include "profiling/profiling.h"
-#include "systime/systime.h"
-#include "led-task.h"
-#include "button-task.h"
-#include "pi-task.h"
-#include "pico/stdlib.h"
-
 #include <string.h>
 #include <ctype.h>
-#include <stdlib.h>
+
+#include "device/device.h"
+#include "profiling/profiling.h"
+#include "stdio-text-protocol/stdio-text-protocol.h"
 #include "systime/systime.h"
+
+#include "button-task/button-task.h"
+#include "led-task/led-task.h"
+#include "pi-task/pi-task.h"
 
 #include "firmware.h"
 
 static device_info_t device_info;
 static profiling_result_t profiling_result[TIMERS_NUMBER];
 
-static void cmd_help(const command_t *command);
 static void cmd_info(const command_t *command);
 static void cmd_uptime(const command_t *command);
 static void cmd_profiling(const command_t *command);
@@ -35,7 +34,6 @@ static void cmd_pi_start(const command_t *command);
 static void cmd_pi(const command_t *command);
 
 const api_command_t commands[] = {
-    { "help", "list of commands", cmd_help },
     { "info", "device passport", cmd_info },
     { "uptime", "time since reset", cmd_uptime },
     { "profiling", "get profiling info", cmd_profiling },
@@ -49,7 +47,7 @@ const api_command_t commands[] = {
     { "pi", "get pi value", cmd_pi},
 };
 
-const uint command_count = sizeof(commands) / sizeof(commands[0]);
+const uint32_t command_count = sizeof(commands) / sizeof(commands[0]);
 
 static bool parse_u32(const char *text, uint32_t *value)
 {
@@ -65,31 +63,6 @@ static bool parse_u32(const char *text, uint32_t *value)
 
     *value = (uint32_t)number;
     return true;
-}
-
-void api_handle(const command_t *command)
-{
-    if (command->truncated)
-    {
-        printf("error: command longer than 63 characters or 4 arguments\n");
-        return;
-    }
-
-    for (uint i = 0; i < command_count; i++)
-        if (strcmp(command->name, commands[i].name) == 0)
-        {
-            if (commands[i].callback != NULL)
-                commands[i].callback(command);
-            return;
-        }
-
-    printf("error: unknown command: %s\n", command->name);
-}
-
-static void cmd_help(const command_t *command)
-{
-    for (uint i = 0; i < command_count; i++)
-        printf("%-16s %-s\n", commands[i].name, commands[i].help);
 }
 
 static void cmd_info(const command_t *command)
@@ -110,7 +83,7 @@ static void cmd_uptime(const command_t *command)
     printf("uptime: %llu ms\n", systime_us() / 1000);
 }
 
-static const uint CALC_PI_TERMS = 1000000;
+static const uint32_t CALC_PI_TERMS = 1000000;
 
 static void cmd_pi_start(const command_t *command)
 {

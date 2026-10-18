@@ -5,12 +5,14 @@
 #include "logging/log.h"
 
 static char line[STDIO_TEXT_PROTOCOL_LINE_SIZE];
-static uint line_length = 0;
-static bool truncated = false;
+static uint32_t line_length;
+static bool truncated;
 
 void stdio_text_protocol_init(void)
 {
-    stdio_init_all();
+    line[0] = '\0';
+    line_length = 0;
+    truncated = false;
 }
 
 const command_t *stdio_text_protocol_handle(void)

@@ -1,13 +1,12 @@
-#include "button-task.h"
-#include "led-task.h"
-#include "hardware/gpio.h"
-#include <stdio.h>
-#include "systime/systime.h"
+#include "button-task/button-task.h"
 
-static const uint BUTTON_PIN = 15;
-static const uint DEBOUNCE_US = 20000;
-static uint64_t last_us = 0;
-static uint64_t presses = 0;
+#include "systime/systime.h"
+#include "platform/platform.h"
+
+static const uint64_t DEBOUNCE_US = 20000;
+static uint64_t last_us;
+static uint64_t presses;
+button_task_callback_t button_task;
 
 typedef enum {
     BUTTON_STATE_RELEASED,
@@ -16,18 +15,19 @@ typedef enum {
     BUTTON_STATE_RELEASE_DOUBT
 } button_state_t;
 
-static button_state_t button_state = BUTTON_STATE_RELEASED;
+static button_state_t button_state;
 
-void button_task_init(void)
+void button_task_init(button_task_callback_t on_press)
 {
-    gpio_init(BUTTON_PIN);
-    gpio_set_dir(BUTTON_PIN, GPIO_IN);
-    gpio_pull_up(BUTTON_PIN);
+    last_us = 0;
+    presses = 0;
+    button_state = BUTTON_STATE_RELEASED;
+    button_task = on_press;
 }
 
 void button_task_handle(void)
 {
-    bool state = gpio_get(BUTTON_PIN);
+    bool state = platform_button_read();
     uint64_t now_us = systime_us();
 
     switch (button_state)
@@ -45,7 +45,7 @@ void button_task_handle(void)
                 {
                     button_state = BUTTON_STATE_PRESSED;
                     presses++;
-                    led_task_next_state();
+                    button_task();
                 }else;
             else
                 button_state = BUTTON_STATE_RELEASED;
@@ -79,4 +79,3 @@ uint64_t button_task_get_press_count(void)
 {
     return presses;
 }
-

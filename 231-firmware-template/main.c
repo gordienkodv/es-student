@@ -1,13 +1,15 @@
-#include "api.h"
-#include "led-task.h"
-#include "button-task.h"
-#include "pi-task.h"
-
-#include "stdio-text-protocol/stdio-text-protocol.h"
 #include "device/device.h"
 #include "logging/log.h"
 #include "profiling/profiling.h"
+#include "stdio-text-protocol/stdio-text-protocol.h"
 #include "systime/systime.h"
+
+#include "api/api.h"
+#include "button-task/button-task.h"
+#include "led-task/led-task.h"
+#include "pi-task/pi-task.h"
+
+#include "platform/platform.h"
 #include "firmware.h"
 
 typedef enum {
@@ -16,9 +18,7 @@ typedef enum {
     STOPWATCH_LED,
     STOPWATCH_BUTTON,
     STOPWATCH_PI,
-} timers_id_t;
-
-timers_id_t timers_id;
+} stopwatch_id_t;
 
 int main()
 {
@@ -26,7 +26,8 @@ int main()
 
     stdio_text_protocol_init();
     led_task_init();
-    button_task_init();
+    button_task_init(led_task_next_state);
+    platform_init();
 
     profiling_stopwatch_init(STOPWATCH_LOOP, "loop");
     profiling_stopwatch_init(STOPWATCH_COMMAND, "commmand");

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "pico/types.h"
 #include "stdio-text-protocol/stdio-text-protocol.h"
 
 typedef void (*api_callback_t)(const command_t *command);
@@ -13,6 +12,4 @@ typedef struct
 } api_command_t;
 
 extern const api_command_t commands[];
-extern const uint command_count;
-
-void api_handle(const command_t *command);
+extern const uint32_t command_count;
