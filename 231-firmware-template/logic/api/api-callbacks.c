@@ -94,7 +94,7 @@ static void cmd_pi_start(const command_t *command)
         if (!pi_task_start(CALC_PI_TERMS))
             printf("error: pi is busy\n");
         else
-            printf("pi: started, %u terms\n", (unsigned)value);
+            printf("pi: started, %u terms\n", (unsigned)CALC_PI_TERMS);
     }
     else if( !parse_u32(command->argv[0], &value) || (command->argc!=1))
     {
@@ -102,6 +102,11 @@ static void cmd_pi_start(const command_t *command)
     }
     else
     {
+        if(value == 0)
+            {
+                printf("error: terms must be greater than 0\n");
+                return;
+            }
         if (!pi_task_start(value))
             printf("error: pi is busy\n");
         else
