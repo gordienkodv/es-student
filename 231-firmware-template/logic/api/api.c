@@ -8,6 +8,7 @@
 
 static void cmd_help()
 {
+    printf("%-16s %-s\n", "help", "list of commands");
     for (uint32_t i = 0; i < command_count; i++)
         printf("%-16s %-s\n", commands[i].name, commands[i].help);
 }
@@ -21,7 +22,10 @@ void api_handle(const command_t *command)
     }
 
     if(strcmp(command->name, "help") == 0)
-        cmd_help();
+        {
+            cmd_help();
+            return;
+        }
     else
         for (uint32_t i = 0; i < command_count; i++)
             if (strcmp(command->name, commands[i].name) == 0)
@@ -31,5 +35,5 @@ void api_handle(const command_t *command)
                 return;
             }
 
-    printf("error: unknown command: %s\n", command->name);
+    printf("error: unknown command: %s\n, try help", command->name);
 }

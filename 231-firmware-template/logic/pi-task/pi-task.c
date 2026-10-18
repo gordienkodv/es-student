@@ -1,16 +1,8 @@
 #include "pi-task/pi-task.h"
 
-#include <stdio.h>
-#include <stdint.h>
 #include "systime/systime.h"
 
 #define PI_TERMS_PER_CALL 100
-
-typedef enum {
-    PI_NEVER_STARTED,
-    PI_RUNNING,
-    PI_FINISHED,
-} pi_state_t;
 
 static pi_state_t pi_state = PI_NEVER_STARTED;
 static uint64_t total_us = 0;
@@ -31,9 +23,8 @@ bool pi_task_start(int n)
         pi_term_need = n;
         pi_sign = 1;
         pi = 0.0;
-        printf("pi: started, %u terms\n", n);
+        return true;
     }
-    return true;
 }
 
 void pi_task_handle(void)
@@ -60,19 +51,14 @@ void pi_task_handle(void)
     }
 }
 
-void pi_task_get_result(void)
+pi_answer_t* pi_task_get_result(void)
 {
-    switch(pi_state)
-    {
-        case PI_NEVER_STARTED:
-            printf("pi: not started\n");
-            break;
-        case PI_RUNNING:
-            printf("pi: running\n");
-            break;
-        case PI_FINISHED:
-            printf("pi: %.9f in %u ms\n", pi, (unsigned)(total_us/1000));
-            break;
-    }
+    static pi_answer_t pi_answer;
+
+    pi_answer.pi_state = pi_state;
+    pi_answer.pi = pi;
+    pi_answer.total_us = total_us;
+
+    return &pi_answer;
 }
 

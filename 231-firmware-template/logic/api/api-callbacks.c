@@ -87,23 +87,43 @@ static const uint32_t CALC_PI_TERMS = 1000000;
 
 static void cmd_pi_start(const command_t *command)
 {
-    uint32_t value;
+    uint32_t value = 0;
 
-    if (command->argv[0] == NULL)
+    if (command->argc == 0)
+    {
         if (!pi_task_start(CALC_PI_TERMS))
             printf("error: pi is busy\n");
-        else {;}
-    else if(parse_u32(command->argv[0], &value) && (command->argc==1))
+        else
+            printf("pi: started, %u terms\n", (unsigned)value);
+    }
+    else if( !parse_u32(command->argv[0], &value) || (command->argc!=1))
+    {
+        printf("error: usage pi_start [terms]\n");
+    }
+    else
+    {
         if (!pi_task_start(value))
             printf("error: pi is busy\n");
-        else {;}
-    else
-        printf("error: usage start_pi [terms]\n");
+        else
+            printf("pi: started, %u terms\n", (unsigned)value);
+    }
 }
 
 static void cmd_pi(const command_t *command)
 {
-    pi_task_get_result();
+    pi_answer_t *pi_answer = pi_task_get_result();
+    switch(pi_answer->pi_state)
+    {
+        case PI_NEVER_STARTED:
+            printf("pi: not started\n");
+            break;
+        case PI_RUNNING:
+            printf("pi: running\n");
+            break;
+        case PI_FINISHED:
+            printf("pi: %.9f in %u ms\n", pi_answer->pi, (unsigned)(pi_answer->total_us/1000));
+            break;
+    }
 }
 
 static void cmd_profiling(const command_t *command)
