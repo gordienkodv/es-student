@@ -80,7 +80,7 @@ const command_t *stdio_text_protocol_handle(void)
         return NULL;
     }
 
-    if((line_length==0) && (symbol=='\0'))
+    if((line_length==0) && (symbol==' '))
         return NULL;
 
     if (line_length + 1 < STDIO_TEXT_PROTOCOL_LINE_SIZE)
