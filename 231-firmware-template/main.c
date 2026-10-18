@@ -5,7 +5,7 @@
 
 #include "stdio-text-protocol/stdio-text-protocol.h"
 #include "device/device.h"
-#include "logging/logging.h"
+#include "logging/log.h"
 #include "profiling/profiling.h"
 #include "systime/systime.h"
 #include "firmware.h"

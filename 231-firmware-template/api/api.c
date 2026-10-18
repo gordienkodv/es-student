@@ -135,9 +135,13 @@ static void cmd_pi(const command_t *command)
 
 static void cmd_profiling(const command_t *command)
 {
-    for(int id=0; id<TIMERS_NUMBER; id++)
-        if(profiling_get(id, &profiling_result[id]))
-            printf("%-10s count %-10u mean %.2f us  max %u us\n", profiling_result[id].name, (unsigned)profiling_result[id].number_starts, profiling_result[id].mean_us, (unsigned)profiling_result[id].max_us);
+    if(PROFILING_ENABLED)
+        for(int id=0; id<TIMERS_NUMBER; id++)
+            if(profiling_get(id, &profiling_result[id]))
+                printf("%-10s count %-10u mean %.2f us  max %u us\n", profiling_result[id].name, (unsigned)profiling_result[id].number_starts, profiling_result[id].mean_us, (unsigned)profiling_result[id].max_us);
+            else{;}
+    else
+        printf("profiling is disabled in this build\n");
 }
 
 static void cmd_profiling_reset(const command_t *command)
