@@ -26,8 +26,8 @@ int main()
 
     stdio_text_protocol_init();
     led_task_init();
-    button_task_init(BUTTON1, led_task_next_state);
-    button_task_init(BUTTON2, led_task_next_blink_regime);
+    button_task_init(BUTTON1, led_task_next_state, led_task_blink);
+    button_task_init(BUTTON2, led_task_next_blink_regime, NULL);
     platform_init();
 
     profiling_stopwatch_init(STOPWATCH_LOOP, "loop");
