@@ -6,7 +6,7 @@
 static const uint64_t DEBOUNCE_US = 20000;
 static uint64_t last_us;
 static uint64_t presses;
-button_task_callback_t button_task;
+static button_task_callback_t button_task;
 
 typedef enum {
     BUTTON_STATE_RELEASED,

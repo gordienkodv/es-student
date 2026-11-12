@@ -13,6 +13,7 @@ typedef struct{
 } profiling_stopwatch_t;
 
 static profiling_stopwatch_t profiling_stopwatch[TIMERS_NUMBER];
+uint32_t real_timers_number = 0;
 
 void profiling_stopwatch_init(uint32_t id, const char *name)
 {
@@ -22,6 +23,7 @@ void profiling_stopwatch_init(uint32_t id, const char *name)
     profiling_stopwatch[id].number_starts = 0;
     profiling_stopwatch[id].mean_us = 0;
     profiling_stopwatch[id].max_us = 0;
+    real_timers_number++;
 }
 
 #if PROFILING_ENABLED
@@ -50,7 +52,7 @@ void profiling_stop(uint32_t id)
 
 bool profiling_get(uint32_t id, profiling_result_t *result)
 {
-    if(id<TIMERS_NUMBER && (profiling_stopwatch[id].number_starts>0))
+    if(id<real_timers_number && (profiling_stopwatch[id].number_starts>0))
     {
         result->name = profiling_stopwatch[id].name;
         result->number_starts = profiling_stopwatch[id].number_starts;
@@ -65,6 +67,6 @@ bool profiling_get(uint32_t id, profiling_result_t *result)
 
 void profiling_reset(void)
 {
-    for(int id=0; id<TIMERS_NUMBER; id++)
+    for(int id=0; id< real_timers_number; id++)
         profiling_stopwatch_init(id, profiling_stopwatch[id].name);
 }

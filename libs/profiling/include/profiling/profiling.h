@@ -15,7 +15,7 @@ void profiling_stop(uint32_t id);
 #define profiling_stop(id) ((void)0)
 #endif
 
-#define TIMERS_NUMBER 5
+#define TIMERS_NUMBER 10
 
 typedef struct {
     const char* name;
