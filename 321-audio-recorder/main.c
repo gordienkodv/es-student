@@ -8,6 +8,7 @@
 #include "button-task/button-task.h"
 #include "led-task/led-task.h"
 #include "pi-task/pi-task.h"
+#include "block-task/block-task.h"
 
 #include "platform/platform.h"
 #include "firmware.h"
@@ -57,6 +58,8 @@ int main()
         profiling_start(STOPWATCH_TELEMETRY);
         telemetry_task_handle();
         profiling_stop(STOPWATCH_TELEMETRY);
+
+        block_task_handle();
 
         profiling_start(STOPWATCH_COMMAND);
         const command_t *command = stdio_text_protocol_handle();

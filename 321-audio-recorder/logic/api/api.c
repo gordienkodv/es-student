@@ -10,7 +10,7 @@ static void cmd_help()
 {
     printf("%-16s %-s\n", "help", "list of commands");
     for (uint32_t i = 0; i < command_count; i++)
-        printf("%-16s %-s\n", commands[i].name, commands[i].help);
+        printf("%-18s %-s\n", commands[i].name, commands[i].help);
 }
 
 void api_handle(const command_t *command)

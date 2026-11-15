@@ -28,6 +28,7 @@ target_include_directories(platform PUBLIC
 target_link_libraries(platform PRIVATE
     pico_stdlib
     hardware_adc
+    hardware_dma
 )
 #############################################################
 #############################################################
@@ -37,6 +38,7 @@ add_library(logic STATIC
     logic/button-task/button-task.c
     logic/led-task/led-task.c
     logic/pi-task/pi-task.c
+    logic/block-task/block-task.c
     logic/telemetry-task/telemetry-task.c
 )
 

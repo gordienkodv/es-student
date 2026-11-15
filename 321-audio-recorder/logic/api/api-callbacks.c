@@ -15,6 +15,7 @@
 #include "button-task/button-task.h"
 #include "led-task/led-task.h"
 #include "pi-task/pi-task.h"
+#include "block-task/block-task.h"
 #include "platform/platform.h"
 #include "telemetry-task/telemetry-task.h"
 
@@ -46,6 +47,7 @@ static void cmd_timer_blink_start(const command_t *command);
 static void cmd_timer_blink_stop(const command_t *command);
 static void cmd_cap_start(const command_t *command);
 static void cmd_cap_dump(const command_t *command);
+static void cmd_dma_cap(const command_t *command);
 
 const api_command_t commands[] = {
     { "info", "device passport", cmd_info},
@@ -69,6 +71,7 @@ const api_command_t commands[] = {
     { "timer_blink_stop", "stop timer blink, number of toggles", cmd_timer_blink_stop},
     { "cap_start", "start timer", cmd_cap_start},
     { "cap_dump", "dump timer", cmd_cap_dump},
+    { "dma_cap", "start caption", cmd_dma_cap},
 };
 
 const uint32_t command_count = sizeof(commands) / sizeof(commands[0]);
@@ -382,5 +385,47 @@ static void cmd_cap_dump(const command_t *command)
     printf("\n");
 }
 
+static void print_dma_cap(const uint16_t *samples, uint32_t count, uint32_t time_us)
+{
+    uint16_t min_code = samples[0];
+    uint16_t max_code = samples[0];
+    float mean_code = samples[0];
 
+    for(uint32_t i = 1; i < count; i++)
+    {
+        if (samples[i] < min_code)
+            min_code = samples[i];
+        if (samples[i] > max_code)
+            max_code = samples[i];
+        mean_code += samples[i];
+    }
+
+    mean_code /= count;
+    uint64_t expect_time_us = (uint64_t)count*1000000/PLATFORM_SAMPLE_RATE_HZ;
+
+    printf("dma_cap: %u samples in %u us, expected %u us, min %u max %u mean %.1f\n", (unsigned)count, (unsigned)time_us, (unsigned)expect_time_us, (unsigned)min_code, (unsigned)max_code, mean_code);
+}
+
+static void cmd_dma_cap(const command_t *command)
+{
+    uint32_t value;
+
+    if ((command->argc != 1) || !parse_u32(command->argv[0], &value))
+    {
+        printf("error: usage dma_cap <N>\n");
+        return;
+    }
+
+    if ((value == 0) || (value>PLATFORM_BLOCK_MAX))
+    {
+        printf("error: N must be 1..8192\n");
+        return;
+    }
+
+    if(platform_adc_busy() || !block_task_start(value, &print_dma_cap))
+    {
+        printf("error: adc busy\n");
+        return;
+    }
+}
 
