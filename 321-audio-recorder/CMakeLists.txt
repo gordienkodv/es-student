@@ -39,6 +39,7 @@ add_library(logic STATIC
     logic/led-task/led-task.c
     logic/pi-task/pi-task.c
     logic/block-task/block-task.c
+    logic/stream-task/stream-task.c
     logic/telemetry-task/telemetry-task.c
 )
 

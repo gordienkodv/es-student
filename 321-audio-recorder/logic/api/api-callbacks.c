@@ -16,12 +16,14 @@
 #include "led-task/led-task.h"
 #include "pi-task/pi-task.h"
 #include "block-task/block-task.h"
+#include "stream-task/stream-task.h"
 #include "platform/platform.h"
 #include "telemetry-task/telemetry-task.h"
 
 #include "firmware.h"
 
 #define TELEMETRY_DEFAULT_PERIOD_MS 100
+#define STREAM_BLINK_PERIOD_MS 250
 
 static device_info_t device_info;
 static profiling_result_t profiling_result[TIMERS_NUMBER];
@@ -48,6 +50,8 @@ static void cmd_timer_blink_stop(const command_t *command);
 static void cmd_cap_start(const command_t *command);
 static void cmd_cap_dump(const command_t *command);
 static void cmd_dma_cap(const command_t *command);
+static void cmd_stream_start(const command_t *command);
+static void cmd_stream_stop(const command_t *command);
 
 const api_command_t commands[] = {
     { "info", "device passport", cmd_info},
@@ -72,6 +76,8 @@ const api_command_t commands[] = {
     { "cap_start", "start timer", cmd_cap_start},
     { "cap_dump", "dump timer", cmd_cap_dump},
     { "dma_cap", "start caption", cmd_dma_cap},
+    { "stream_start", "start stream", cmd_stream_start},
+    { "stream_stop", "stop stream", cmd_stream_stop},
 };
 
 const uint32_t command_count = sizeof(commands) / sizeof(commands[0]);
@@ -429,3 +435,34 @@ static void cmd_dma_cap(const command_t *command)
     }
 }
 
+static void cmd_stream_start(const command_t *command)
+{
+    uint32_t value;
+
+
+    if(command->argc == 0)
+        value = 16;
+    else if ((command->argc != 1) || !parse_u32(command->argv[0], &value) || !((value==8) || (value==16)))
+    {
+        printf("error: usage stream_start [8|16]\n");
+        return;
+    }
+
+    if(platform_adc_busy() || !stream_task_start(value))
+    {
+        printf("error: adc busy\n");
+        return;
+    }
+
+    printf("stream: started, 44100 Hz, %u bit\n", (unsigned)stream_task_get_bits());
+    led_task_set_state(LED_STATE_OFF);
+    platform_blink_start(STREAM_BLINK_PERIOD_MS);
+}
+
+static void cmd_stream_stop(const command_t *command)
+{
+    stream_task_stop();
+    platform_blink_stop();
+    printf("stream: stopped, %u frames, %u samples, %u overruns\n", 
+        (unsigned)stream_task_get_frames(), (unsigned)stream_task_get_samples(), (unsigned)stream_task_get_overruns());
+}

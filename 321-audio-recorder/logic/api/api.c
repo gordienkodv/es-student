@@ -6,9 +6,11 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "platform/platform.h"
+
 static void cmd_help()
 {
-    printf("%-16s %-s\n", "help", "list of commands");
+    printf("%-18s %-s\n", "help", "list of commands");
     for (uint32_t i = 0; i < command_count; i++)
         printf("%-18s %-s\n", commands[i].name, commands[i].help);
 }
@@ -36,4 +38,10 @@ void api_handle(const command_t *command)
             }
 
     printf("error: unknown command '%s', try help\n", command->name);
+}
+
+void api_send_frame(const stream_header_t *header, const uint8_t *data, uint32_t bytes)
+{
+    platform_write(header, sizeof(*header));
+    platform_write(data, bytes);
 }
