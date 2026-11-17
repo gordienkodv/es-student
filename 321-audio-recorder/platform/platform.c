@@ -5,6 +5,8 @@
 #include "hardware/adc.h"
 #include "hardware/dma.h"
 #include "hardware/irq.h"
+#include "hardware/clocks.h"
+#include "hardware/pwm.h"
 
 #define ADC_PIN 26
 #define ADC_CHANNEL 0
@@ -57,6 +59,11 @@ static uint32_t stream_next;
 
 static void on_stream_buffer(void);
 
+#define TONE_PIN 20
+#define TONE_COUNT_HZ 1000000
+
+uint slice;
+
 void platform_init(void)
 {
     stdio_init_all();
@@ -87,6 +94,11 @@ void platform_init(void)
     stream_channels[1] = dma_claim_unused_channel(true);
     irq_set_exclusive_handler(DMA_IRQ_0, on_stream_buffer);
     irq_set_enabled(DMA_IRQ_0, true);
+
+    gpio_set_function(TONE_PIN, GPIO_FUNC_PWM);
+    slice = pwm_gpio_to_slice_num(TONE_PIN);
+    pwm_set_clkdiv(slice, clock_get_hz(clk_sys)/TONE_COUNT_HZ);
+    platform_tone_set(0);
 }
 
 void platform_led_set(bool on)
@@ -403,3 +415,25 @@ uint32_t platform_stream_overruns(void)
 {
     return stream_overruns;
 }
+
+bool platform_tone_set(uint32_t freq_hz)
+{
+    if(!((freq_hz==0) || ((freq_hz>20) && (freq_hz<20000))))
+        return false;
+    
+    if(freq_hz!=0)
+    {
+        pwm_set_wrap(slice, 1000000/freq_hz-1);
+        pwm_set_gpio_level(TONE_PIN, 500000/freq_hz);
+        pwm_set_enabled(slice, true);
+    }
+    else
+    {
+        pwm_set_wrap(slice, 250);
+        pwm_set_gpio_level(TONE_PIN, 0);
+        pwm_set_enabled(slice, false);
+    }
+    
+    return true;
+}
+
