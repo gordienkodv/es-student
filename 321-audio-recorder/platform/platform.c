@@ -99,6 +99,7 @@ void platform_init(void)
     slice = pwm_gpio_to_slice_num(TONE_PIN);
     pwm_set_clkdiv(slice, clock_get_hz(clk_sys)/TONE_COUNT_HZ);
     platform_tone_set(0);
+    pwm_set_enabled(slice, true);
 }
 
 void platform_led_set(bool on)
@@ -425,13 +426,11 @@ bool platform_tone_set(uint32_t freq_hz)
     {
         pwm_set_wrap(slice, 1000000/freq_hz-1);
         pwm_set_gpio_level(TONE_PIN, 500000/freq_hz);
-        pwm_set_enabled(slice, true);
     }
     else
     {
         pwm_set_wrap(slice, 250);
         pwm_set_gpio_level(TONE_PIN, 0);
-        pwm_set_enabled(slice, false);
     }
     
     return true;
