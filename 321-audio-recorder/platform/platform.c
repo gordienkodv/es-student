@@ -459,7 +459,7 @@ bool platform_watchdog_enable(uint32_t timeout_ms)
     {
         return false;
     }
-    
+
     watchdog_enable(timeout_ms, true);
     return true;
 }
@@ -475,3 +475,7 @@ bool platform_watchdog_caused_reset(uint32_t *restarts)
     return watchdog_reset;
 }
 
+float platform_adc_volts(float code)
+{
+    return code * ADC_VREF_V / ADC_LEVELS;
+}

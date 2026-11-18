@@ -56,3 +56,5 @@ bool platform_tone_set(uint32_t freq_hz);
 bool platform_watchdog_enable(uint32_t timeout_ms);
 void platform_watchdog_feed(void);
 bool platform_watchdog_caused_reset(uint32_t *restarts);
+
+float platform_adc_volts(float code);

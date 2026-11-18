@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "device/device.h"
 #include "profiling/profiling.h"
@@ -56,6 +57,8 @@ static void cmd_generate_tone(const command_t *command);
 static void cmd_hang(const command_t *command);
 static void cmd_wdt_enable(const command_t *command);
 static void cmd_reset_reason(const command_t *command);
+static void cmd_mic_bias(const command_t *command);
+static void cmd_mic_level(const command_t *command);
 
 const api_command_t commands[] = {
     { "info", "device passport", cmd_info},
@@ -86,6 +89,8 @@ const api_command_t commands[] = {
     { "hang", "stop superloop", cmd_hang},
     { "wdt_enable", "enable wdt", cmd_wdt_enable},
     { "reset_reason", "reset stop reason in wdt", cmd_reset_reason},
+    { "mic_bias", "mic bias", cmd_mic_bias},
+    { "mic_level", "mic level", cmd_mic_level},
 };
 
 const uint32_t command_count = sizeof(commands) / sizeof(commands[0]);
@@ -104,11 +109,6 @@ static bool parse_u32(const char *text, uint32_t *value)
 
     *value = (uint32_t)number;
     return true;
-}
-
-void api_print_telemetry(const telemetry_record_t *record)
-{
-    printf("tm: %u %.3f %.1f\n", (unsigned)(record->time_us), record->voltage_v, record->temp_c);
 }
 
 static void cmd_info(const command_t *command)
@@ -532,4 +532,87 @@ static void cmd_reset_reason(const command_t *command)
         printf("reset: watchdog, restarts %u\n", (unsigned)value);
     else
         printf("reset: other, restarts %u\n", (unsigned)value);
+}
+
+static void block_stats(const uint16_t *samples, uint32_t count, float *mean, float *rms, float *peak)
+{
+    uint32_t sum = 0;
+    for (uint32_t i = 0; i < count; i++)
+    {
+        sum += samples[i];
+    }
+    int32_t center = (int32_t)(sum / count);
+
+    uint64_t squares = 0;
+    uint32_t largest = 0;
+    for (uint32_t i = 0; i < count; i++)
+    {
+        int32_t deviation = (int32_t)samples[i] - center;
+        uint32_t size = deviation < 0 ? -deviation : deviation;
+        squares += (uint64_t)(deviation * deviation);
+        if (size > largest)
+        {
+            largest = size;
+        }
+    }
+
+    *mean = (float)sum / count;
+    *rms = sqrtf((float)squares / count);
+    *peak = (float)largest;
+}
+
+static void print_mic_bias(const uint16_t *samples, uint32_t count, uint32_t time_us)
+{
+    float mean;
+    float rms;
+    float peak;
+
+    block_stats(samples, count, &mean, &rms, &peak);
+    printf("mic: bias %.3f V\n", platform_adc_volts(mean));
+}
+
+static void print_mic_level(const uint16_t *samples, uint32_t count, uint32_t time_us)
+{
+    float mean;
+    float rms;
+    float peak;
+
+    block_stats(samples, count, &mean, &rms, &peak);
+    printf("mic: level %.1f mV rms, peak %.1f mV, %u ms\n", platform_adc_volts(rms)*1e3, platform_adc_volts(peak)*1e3, (unsigned)(count*1000/44100));
+}
+
+static void cmd_mic_bias(const command_t *command)
+{
+    if(platform_adc_busy() || !block_task_start(4410, &print_mic_bias))
+    {
+        printf("error: adc busy\n");
+        return;
+    }
+}
+
+static void cmd_mic_level(const command_t *command)
+{
+    uint32_t value;
+
+    if(command->argc == 0)
+        value = 100;
+    else if ((command->argc != 1) || !parse_u32(command->argv[0], &value))
+    {
+        printf("error: usage mic_level [<ms>]\n");
+        return;
+    }
+
+    uint64_t value_ = value*44100/1000;
+
+    if((value_==0) || (value_>8192))
+    {
+        printf("error: ms must be 1..185\n");
+        return;
+    }
+
+    if(platform_adc_busy() || !block_task_start(value_, &print_mic_level))
+    {
+        printf("error: adc busy\n");
+        return;
+    }
 }

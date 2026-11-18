@@ -40,6 +40,11 @@ void api_handle(const command_t *command)
     printf("error: unknown command '%s', try help\n", command->name);
 }
 
+void api_print_telemetry(const telemetry_record_t *record)
+{
+    printf("tm: %u %.3f %.1f\n", (unsigned)(record->time_us), record->voltage_v, record->temp_c);
+}
+
 void api_send_frame(const stream_header_t *header, const uint8_t *data, uint32_t bytes)
 {
     platform_write(header, sizeof(*header));
